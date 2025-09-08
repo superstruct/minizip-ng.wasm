@@ -1,10 +1,39 @@
 # builds
 _deps/
 build/
+build-*/
 CMakeFiles/
 lib/
+install/
+install-*/
 Testing/
 third_party/
 
 # IDE
 .vscode
+
+# WASM build artifacts
+wasm/*.wasm
+wasm/*.js.mem
+wasm/*.js.symbols
+wasm/*.js.temp
+node_modules/
+package-lock.json
+yarn.lock
+
+# WASM-specific temporary files
+*.wast
+*.wat
+benchmark-report-*.json
+test-results/
+coverage/
+.nyc_output/
+
+# CI/CD artifacts
+build-logs/
+emsdk/
+emsdk_env.sh
+
+# Playwright
+playwright-report/
+test-results/

@@ -1,0 +1,80 @@
+{
+  "name": "minizip-ng.wasm",
+  "version": "4.0.10",
+  "description": "High-performance ZIP processing library compiled to WebAssembly with WASM-native features",
+  "main": "install/minizip-ng-wasm.js",
+  "types": "types/minizip-ng-wasm.d.ts",
+  "scripts": {
+    "build": "./build-wasm.sh",
+    "build:debug": "BUILD_TYPE=Debug ./build-wasm.sh",
+    "build:clean": "./build-wasm.sh clean",
+    "test": "npm run test:node && npm run test:browser",
+    "test:node": "node test/js/test-node.js",
+    "test:browser": "playwright test",
+    "test:unit": "node test/js/test-unit.js",
+    "benchmark": "npm run benchmark:node && npm run benchmark:browser",
+    "benchmark:node": "node test/benchmarks/benchmark-node.js",
+    "benchmark:browser": "playwright test test/benchmarks/benchmark-browser.spec.js",
+    "benchmark:compression": "node test/benchmarks/compression-benchmark.js",
+    "benchmark:simd": "node test/benchmarks/simd-benchmark.js",
+    "validate": "npm run build && npm run test && npm run benchmark",
+    "dev": "npm run build:debug && npm run test:node",
+    "act:build": "act -j build-wasm",
+    "act:test": "act -j test-js-api",
+    "act:benchmark": "act -j benchmark-performance",
+    "analyze": "node test/js/analyze-wasm.js",
+    "serve": "python3 -m http.server 8000",
+    "clean": "rm -rf build install node_modules test-results .nyc_output coverage"
+  },
+  "keywords": [
+    "zip",
+    "compression",
+    "wasm",
+    "webassembly",
+    "minizip",
+    "archive",
+    "simd",
+    "emscripten",
+    "browser",
+    "nodejs"
+  ],
+  "author": {
+    "name": "Superstruct Ltd",
+    "location": "New Zealand"
+  },
+  "license": "Zlib",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/superstruct/minizip-ng.wasm.git"
+  },
+  "homepage": "https://github.com/superstruct/minizip-ng.wasm#readme",
+  "files": [
+    "install/",
+    "types/",
+    "README.md",
+    "LICENSE",
+    "wasm/minizip-ng-wasm.js"
+  ],
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "benchmark": "^2.1.4",
+    "chalk": "^5.3.0",
+    "playwright": "^1.40.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browser": {
+    "fs": false,
+    "path": false
+  },
+  "exports": {
+    ".": {
+      "import": "./install/minizip-ng-wasm.js",
+      "require": "./install/minizip-ng-wasm.js",
+      "browser": "./install/minizip-ng-wasm.js"
+    },
+    "./types": "./types/minizip-ng-wasm.d.ts"
+  }
+}

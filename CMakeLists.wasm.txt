@@ -1,0 +1,144 @@
+# minizip-ng WASM Build Configuration
+# Copyright (C) 2025 Superstruct Ltd, New Zealand
+# Licensed under the same terms as minizip-ng
+
+cmake_minimum_required(VERSION 3.13)
+
+# Include base project configuration
+include(CMakeLists.txt)
+
+# WASM-specific overrides
+if(EMSCRIPTEN)
+    message(STATUS "Building minizip-ng.wasm with Emscripten ${EMSCRIPTEN_VERSION}")
+    
+    # WASM-specific build settings
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type for WASM")
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libraries for WASM")
+    
+    # Memory configuration - System Tier 2 settings
+    set(WASM_MEMORY_FLAGS
+        -s INITIAL_MEMORY=64MB
+        -s MAXIMUM_MEMORY=512MB
+        -s ALLOW_MEMORY_GROWTH=1
+    )
+    
+    # Performance optimization flags
+    set(WASM_OPTIMIZATION_FLAGS
+        -O3
+        -flto
+        --closure=1
+        -msimd128
+    )
+    
+    # WASM module configuration
+    set(WASM_MODULE_FLAGS
+        -s WASM=1
+        -s MODULARIZE=1
+        -s EXPORT_ES6=1
+        -s USE_ES6_IMPORT_META=0
+        -s ENVIRONMENT=web,worker,node
+        -s EXPORT_NAME=MinizipNGModule
+    )
+    
+    # File system support for WASM-native features
+    set(WASM_FILESYSTEM_FLAGS
+        -s FORCE_FILESYSTEM=1
+        -lidbfs.js
+        --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/test/data@/test-data
+    )
+    
+    # SIMD and performance features
+    set(WASM_SIMD_FLAGS
+        -s SIMD=1
+        -s BULK_MEMORY_OPS=1
+    )
+    
+    # Export essential functions
+    set(WASM_EXPORT_FLAGS
+        -s EXPORTED_FUNCTIONS="['_malloc', '_free', '_mz_zip_reader_open_buffer', '_mz_zip_reader_create', '_mz_zip_writer_create']"
+        -s EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap', 'FS']"
+    )
+    
+    # Combine all WASM flags
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WASM_OPTIMIZATION_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${WASM_MEMORY_FLAGS} ${WASM_MODULE_FLAGS} ${WASM_FILESYSTEM_FLAGS} ${WASM_SIMD_FLAGS} ${WASM_EXPORT_FLAGS}")
+    
+    # WASM-specific feature configuration
+    set(MZ_COMPAT ON CACHE BOOL "Enable compatibility layer for WASM")
+    set(MZ_ZLIB ON CACHE BOOL "Enable ZLIB compression")
+    set(MZ_BZIP2 ON CACHE BOOL "Enable BZIP2 compression") 
+    set(MZ_ZSTD ON CACHE BOOL "Enable ZSTD compression")
+    set(MZ_LZMA OFF CACHE BOOL "Disable LZMA to reduce complexity")
+    set(MZ_LIBCOMP OFF CACHE BOOL "Disable Apple libcompression")
+    set(MZ_OPENSSL OFF CACHE BOOL "Disable OpenSSL for initial implementation")
+    set(MZ_ICONV OFF CACHE BOOL "Disable iconv to reduce complexity")
+    set(MZ_FETCH_LIBS OFF CACHE BOOL "Use pre-built ecosystem libraries")
+    set(MZ_BUILD_TESTS OFF CACHE BOOL "No CLI tools for WASM")
+    set(MZ_BUILD_UNIT_TESTS ON CACHE BOOL "Enable unit tests for validation")
+    
+    # WASM SIMD optimization settings
+    set(MZ_WASM_SIMD ON CACHE BOOL "Enable WASM SIMD optimizations")
+    
+    # Ecosystem integration - use Foundation Tier 1 libraries
+    if(DEFINED ECOSYSTEM_ZLIB_DIR)
+        find_library(ZLIB_LIBRARY z PATHS ${ECOSYSTEM_ZLIB_DIR}/lib NO_DEFAULT_PATH)
+        find_path(ZLIB_INCLUDE_DIR zlib.h PATHS ${ECOSYSTEM_ZLIB_DIR}/include NO_DEFAULT_PATH)
+        if(ZLIB_LIBRARY AND ZLIB_INCLUDE_DIR)
+            set(ZLIB_LIBRARIES ${ZLIB_LIBRARY})
+            set(ZLIB_FOUND TRUE)
+            message(STATUS "Using ecosystem zlib.wasm from ${ECOSYSTEM_ZLIB_DIR}")
+        endif()
+    endif()
+    
+    if(DEFINED ECOSYSTEM_BZIP2_DIR)
+        find_library(BZIP2_LIBRARY bz2 PATHS ${ECOSYSTEM_BZIP2_DIR}/lib NO_DEFAULT_PATH)
+        find_path(BZIP2_INCLUDE_DIR bzlib.h PATHS ${ECOSYSTEM_BZIP2_DIR}/include NO_DEFAULT_PATH)
+        if(BZIP2_LIBRARY AND BZIP2_INCLUDE_DIR)
+            set(BZIP2_LIBRARIES ${BZIP2_LIBRARY})
+            set(BZIP2_FOUND TRUE)
+            message(STATUS "Using ecosystem bzip2.wasm from ${ECOSYSTEM_BZIP2_DIR}")
+        endif()
+    endif()
+    
+    if(DEFINED ECOSYSTEM_ZSTD_DIR)
+        find_library(ZSTD_LIBRARY zstd PATHS ${ECOSYSTEM_ZSTD_DIR}/lib NO_DEFAULT_PATH)
+        find_path(ZSTD_INCLUDE_DIR zstd.h PATHS ${ECOSYSTEM_ZSTD_DIR}/include NO_DEFAULT_PATH)
+        if(ZSTD_LIBRARY AND ZSTD_INCLUDE_DIR)
+            set(ZSTD_LIBRARIES ${ZSTD_LIBRARY})
+            set(ZSTD_FOUND TRUE)
+            message(STATUS "Using ecosystem zstd.wasm from ${ECOSYSTEM_ZSTD_DIR}")
+        endif()
+    endif()
+    
+    # Add WASM-specific source files
+    target_sources(${PROJECT_NAME} PRIVATE
+        wasm/mz_os_wasm.c
+        wasm/mz_strm_os_wasm.c
+        wasm/mz_wasm_simd.c
+        wasm/mz_wasm_native.c
+    )
+    
+    # Include WASM-specific headers
+    target_include_directories(${PROJECT_NAME} PRIVATE wasm)
+    
+    # Define WASM-specific preprocessor macros
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        MZ_WASM=1
+        MZ_WASM_NATIVE=1
+        __EMSCRIPTEN__=1
+    )
+    
+    # WASM SIMD support detection
+    if(MZ_WASM_SIMD)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE MZ_WASM_SIMD=1)
+    endif()
+    
+    # Create WASM-native JavaScript wrapper
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_SOURCE_DIR}/wasm/minizip-ng-wasm.js
+            ${CMAKE_CURRENT_BINARY_DIR}/minizip-ng-wasm-wrapper.js
+        COMMENT "Copying WASM-native JavaScript wrapper"
+    )
+    
+endif()
