@@ -9,7 +9,7 @@ on:
     types: [created]
 
 env:
-  EMSCRIPTEN_VERSION: '4.0.13'
+  EMSCRIPTEN_VERSION: '4.0.14'
   NODE_VERSION: '22'
 
 jobs:
