@@ -1,12 +1,12 @@
-# minizip-ng
+# @discere-os/minizip-ng.wasm
 
-minizip-ng is a zip manipulation library written in C that is supported on Windows, macOS, and Linux.
+WebAssembly port of minizip-ng - Modern zip manipulation library with advanced compression and encryption support.
 
-[![Master Branch Status](https://github.com/zlib-ng/minizip-ng/workflows/Build/badge.svg)](https://github.com/zlib-ng/minizip-ng/actions)
-[![Fuzzing Status](https://oss-fuzz-build-logs.storage.googleapis.com/badges/minizip.svg)](https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:minizip)
-[![License: Zlib](https://img.shields.io/badge/license-zlib-lightgrey.svg)](https://github.com/zlib-ng/minizip-ng/blob/master/LICENSE)
-[![codecov.io](https://codecov.io/github/zlib-ng/minizip-ng/coverage.svg?branch=develop)](https://codecov.io/github/zlib-ng/minizip-ng/)
-[![Packaging status](https://repology.org/badge/tiny-repos/minizip-ng.svg)](https://repology.org/project/minizip-ng/versions)
+[![CI/CD](https://github.com/discere-os/discere-nucleus/actions/workflows/minizip-ng-wasm-ci.yml/badge.svg)](https://github.com/discere-os/discere-nucleus/actions)
+[![JSR](https://jsr.io/badges/@discere-os/minizip-ng.wasm)](https://jsr.io/@discere-os/minizip-ng.wasm)
+[![npm version](https://badge.fury.io/js/@discere-os%2Fminizip-ng.wasm.svg)](https://badge.fury.io/js/@discere-os%2Fminizip-ng.wasm)
+[![License](https://img.shields.io/badge/License-Zlib-blue.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-alpha-orange.svg)](https://github.com/discere-os/discere-nucleus)
 
 Developed and maintained by Nathan Moinvaziri.
 
@@ -104,6 +104,23 @@ installed then it will be used, otherwise CMake will retrieve the source code fo
 |[zstd](https://github.com/facebook/zstd)|[BSD](https://github.com/facebook/zstd/blob/dev/LICENSE)|`MZ_ZSTD`|Written by Facebook.|
 
 This project uses the zlib [license](LICENSE).
+
+## 💖 Support This Work
+
+This WebAssembly port is part of a larger effort to bring professional desktop applications to browsers with native performance.
+
+**👨‍💻 About the Maintainer**: [Isaac Johnston (@superstructor)](https://github.com/superstructor) - Building foundational browser-native computing infrastructure through systematic C/C++ to WebAssembly porting.
+
+**📊 Impact**: 70+ open source WASM libraries enabling professional applications like Blender, GIMP, and scientific computing tools to run natively in browsers.
+
+**🚀 Your Support Enables**:
+- Continued maintenance and updates
+- Performance optimizations
+- New library ports and integrations
+- Documentation and tutorials
+- Cross-browser compatibility testing
+
+**[💖 Sponsor this work](https://github.com/sponsors/superstructor)** to help build the future of browser-native computing.
 
 ## Acknowledgments
 
