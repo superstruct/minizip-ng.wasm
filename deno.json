@@ -1,0 +1,14 @@
+{
+  "name": "@discere-os/minizip-ng.wasm",
+  "exports": {
+    ".": "./",
+    "./side": "./install/wasm/minizip-side.wasm",
+    "./main": "./install/wasm/minizip-main.js"
+  },
+  "tasks": {
+    "build:main:meson": "meson setup build-main --cross-file=scripts/emscripten.cross -Dmain_module=true -Dside_module=false -Dsimd=true --prefix=$PWD/install -Dlibdir=wasm -Dbindir=wasm && meson compile -C build-main minizip-main && meson install -C build-main",
+    "build:side:meson": "meson setup build-side --cross-file=scripts/emscripten.cross -Dmain_module=false -Dside_module=true -Dsimd=true --prefix=$PWD/install -Dlibdir=wasm -Dbindir=wasm && meson compile -C build-side minizip-side && meson install -C build-side",
+    "build:wasm:meson": "deno task build:main:meson && deno task build:side:meson"
+  }
+}
+

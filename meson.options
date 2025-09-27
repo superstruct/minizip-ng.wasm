@@ -1,0 +1,5 @@
+option('main_module', type: 'boolean', value: false, description: 'Build MAIN module (ES6 + MODULARIZE)')
+option('side_module', type: 'boolean', value: false, description: 'Build SIDE module (for dlopen)')
+option('simd', type: 'boolean', value: true, description: 'Enable wasm SIMD (msimd128)')
+option('exports', type: 'string', value: 'exports.json', description: 'Path to EXPORTED_FUNCTIONS json for MAIN build')
+
